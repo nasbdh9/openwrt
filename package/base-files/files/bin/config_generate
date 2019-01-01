@@ -50,7 +50,7 @@ generate_static_network() {
 	EOF
 	[ -e /proc/sys/net/ipv6 ] && {
 		uci -q batch <<-EOF
-			set network.globals.ula_prefix='auto'
+			# set network.globals.ula_prefix='auto'
 		EOF
 	}
 
