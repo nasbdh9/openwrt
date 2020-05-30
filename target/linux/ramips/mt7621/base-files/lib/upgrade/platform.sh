@@ -54,6 +54,7 @@ platform_do_upgrade() {
 	netgear,r6850|\
 	netgear,wac104|\
 	netis,wf2881|\
+	xiaomi,mi-router-ac2100|\
 	xiaomi,mir3g|\
 	xiaomi,mir3p|\
 	xiaomi,redmi-router-ac2100)
