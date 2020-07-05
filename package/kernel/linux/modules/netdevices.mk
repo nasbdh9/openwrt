@@ -1219,3 +1219,18 @@ define KernelPackage/sfp/description
 endef
 
 $(eval $(call KernelPackage,sfp))
+
+define KernelPackage/hinic
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Huawei Intelligent PCIE Network Interface Card
+  DEPENDS:=@(x86_64||aarch64)
+  KCONFIG:=CONFIG_HINIC
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/huawei/hinic/hinic.ko
+  AUTOLOAD:=$(call AutoProbe,hinic)
+endef
+
+define KernelPackage/hinic/description
+ Supports Huawei Intelligent PCIE Network Interface Card
+endef
+
+$(eval $(call KernelPackage,hinic))
