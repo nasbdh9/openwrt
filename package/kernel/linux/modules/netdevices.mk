@@ -1219,3 +1219,80 @@ define KernelPackage/sfp/description
 endef
 
 $(eval $(call KernelPackage,sfp))
+
+define KernelPackage/cxgb
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Chelsio T1 Ethernet Driver
+  DEPENDS:=@PCI_SUPPORT +kmod-lib-crc32c +kmod-mdio +kmod-libcxgb
+  KCONFIG:= CONFIG_CHELSIO_T1 \
+	CONFIG_CHELSIO_T1_1G=y
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/chelsio/cxgb/cxgb.ko
+  AUTOLOAD:=$(call AutoProbe,cxgb)
+endef
+
+define KernelPackage/cxgb/description
+	Supports Chelsio T1 Card
+endef
+
+$(eval $(call KernelPackage,cxgb))
+
+define KernelPackage/cxgb3
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Chelsio T3 Ethernet Driver
+  DEPENDS:=@PCI_SUPPORT +kmod-mdio +kmod-libcxgb +cxgb3-firmware
+  KCONFIG:=CONFIG_CHELSIO_T3
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/chelsio/cxgb3/cxgb3.ko
+  AUTOLOAD:=$(call AutoProbe,cxgb3)
+endef
+
+define KernelPackage/cxgb3/description
+	Supports Chelsio T3 Card
+endef
+
+$(eval $(call KernelPackage,cxgb3))
+
+define KernelPackage/cxgb4
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Chelsio T4 Ethernet Driver
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-mdio +kmod-lib-zlib-deflate +kmod-libcxgb +cxgb4-firmware
+  KCONFIG:= CONFIG_CHELSIO_T4 \
+	CHELSIO_T4_DCB=n
+	CHELSIO_T4_FCOE=n
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/chelsio/cxgb4/cxgb4.ko
+  AUTOLOAD:=$(call AutoProbe,cxgb4)
+endef
+
+define KernelPackage/cxgb4/description
+	Supports Chelsio T4/5/6 Card
+endef
+
+$(eval $(call KernelPackage,cxgb4))
+
+define KernelPackage/cxgb4vf
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Chelsio T4 VF Ethernet Driver
+  DEPENDS:=@PCI_SUPPORT +kmod-cxgb4
+  KCONFIG:=CONFIG_CHELSIO_T4VF
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf.ko
+  AUTOLOAD:=$(call AutoProbe,cxgb4vf)
+endef
+
+define KernelPackage/cxgb4vf/description
+	Supports Chelsio T4/5/6 VF Card
+endef
+
+$(eval $(call KernelPackage,cxgb4vf))
+
+define KernelPackage/libcxgb
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Common library for Chelsio drivers
+  KCONFIG:=CONFIG_CHELSIO_LIB
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/chelsio/libcxgb/libcxgb.ko
+  AUTOLOAD:=$(call AutoProbe,libcxgb)
+endef
+
+define KernelPackage/libcxgb/description
+	Common library for Chelsio drivers
+endef
+
+$(eval $(call KernelPackage,libcxgb))
