@@ -1227,3 +1227,22 @@ define KernelPackage/sfc-falcon/description
 endef
 
 $(eval $(call KernelPackage,sfc-falcon))
+
+define KernelPackage/bnxt
+  SUBMENU:=$(NETWORK_DEVICES_MENU)
+  TITLE:=Broadcom NetXtreme-C/E support
+  DEPENDS:=@PCI_SUPPORT +kmod-lib-crc32c +kmod-ptp +kmod-hwmon-core
+  FILES:=$(LINUX_DIR)/drivers/net/ethernet/broadcom/bnxt/bnxt_en.ko
+  KCONFIG:= CONFIG_BNXT \
+	CONFIG_BNXT_SRIOV=y \
+	CONFIG_BNXT_FLOWER_OFFLOAD=n \
+	CONFIG_BNXT_DCB=n \
+	CONFIG_BNXT_HWMON=y
+  AUTOLOAD:=$(call AutoProbe,bnxt_en)
+endef
+
+define KernelPackage/bnxt/description
+  This driver supports Broadcom NetXtreme-C/E 10/25/40/50 gigabit Ethernet cards.
+endef
+
+$(eval $(call KernelPackage,bnxt))
