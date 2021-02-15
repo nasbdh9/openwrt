@@ -80,18 +80,23 @@ detect_mac80211() {
 		htmode=""
 		ht_capab=""
 
-		iw phy "$dev" info | grep -q 'Capabilities:' && htmode=HT20
-
-		iw phy "$dev" info | grep -q '\* 5... MHz \[' && {
-			mode_band="a"
-			channel=$(iw phy "$dev" info | grep '\* 5... MHz \[' | grep '(disabled)' -v -m 1 | sed 's/[^[]*\[\|\].*//g')
-			iw phy "$dev" info | grep -q 'VHT Capabilities' && htmode="VHT80"
+		iw phy "$dev" info | grep -q 'Capabilities:' && {
+			htmode=HT20
+			iw phy "$dev" info | grep -q 'HE.*Capabilities' && htmode="HE20"
 		}
 
-		iw phy "$dev" info | grep -q '\* 5.... MHz \[' && {
-			mode_band="ad"
-			channel=$(iw phy "$dev" info | grep '\* 5.... MHz \[' | grep '(disabled)' -v -m 1 | sed 's/[^[]*\[\|\|\].*//g')
-			iw phy "$dev" info | grep -q 'Capabilities:' && htmode="HT20"
+		iw phy "$dev" info | grep -q '5180 MHz' && {
+			mode_band="a"
+			channel="36"
+			iw phy "$dev" info | grep -q '5180 MHz.*disabled' && channel=149
+			iw phy "$dev" info | grep -q 'VHT Capabilities' && htmode="VHT80"
+			iw phy "$dev" info | grep -q 'HE.*Capabilities' && htmode="HE80"
+		}
+
+		iw phy "$dev" info | grep -q '5955 MHz' && {
+			mode_band="a"
+			channel="1"
+			htmode="HE80"
 		}
 
 		[ -n "$htmode" ] && ht_capab="set wireless.radio${devidx}.htmode=$htmode"
