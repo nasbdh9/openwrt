@@ -105,6 +105,8 @@ hostapd_common_add_device_config() {
 
 	config_add_int airtime_mode
 
+	config_add_boolean multiple_bssid rnr_beacon he_co_locate ema
+
 	hostapd_add_log_config
 }
 
@@ -115,7 +117,8 @@ hostapd_prepare_device_config() {
 	local base_cfg=
 
 	json_get_vars country country_ie beacon_int:100 dtim_period:2 doth require_mode legacy_rates \
-		acs_chan_bias local_pwr_constraint spectrum_mgmt_required airtime_mode cell_density
+		acs_chan_bias local_pwr_constraint spectrum_mgmt_required airtime_mode cell_density \
+		multiple_bssid he_co_locate rnr_beacon ema
 
 	hostapd_set_log_options base_cfg
 
@@ -125,6 +128,10 @@ hostapd_prepare_device_config() {
 	set_default legacy_rates 0
 	set_default airtime_mode 0
 	set_default cell_density 0
+	set_default multiple_bssid 0
+	set_default rnr_beacon 0
+	set_default he_co_locate 0
+	set_default ema 0
 
 	[ -n "$country" ] && {
 		append base_cfg "country_code=$country" "$N"
@@ -211,6 +218,10 @@ hostapd_prepare_device_config() {
 	append base_cfg "beacon_int=$beacon_int" "$N"
 	append base_cfg "dtim_period=$dtim_period" "$N"
 	[ "$airtime_mode" -gt 0 ] && append base_cfg "airtime_mode=$airtime_mode" "$N"
+	[ "$multiple_bssid" -gt 0 ] && append base_cfg "multiple_bssid=$multiple_bssid" "$N"
+	[ "$rnr_beacon" -gt 0 ] && append base_cfg "rnr_beacon=$rnr_beacon" "$N"
+	[ "$ema" -gt 0 ] && append base_cfg "ema=$ema" "$N"
+	[ "$he_co_locate" -gt 0 ] && append base_cfg "he_co_locate=$he_co_locate" "$N"
 
 	json_get_values opts hostapd_options
 	for val in $opts; do
@@ -1097,9 +1108,9 @@ wpa_supplicant_set_fixed_freq() {
 		VHT*) append network_data "vht=1" "$N$T";;
 	esac
 	case "$htmode" in
-		VHT80) append network_data "max_oper_chwidth=1" "$N$T";;
-		VHT160) append network_data "max_oper_chwidth=2" "$N$T";;
-		VHT20|VHT40) append network_data "max_oper_chwidth=0" "$N$T";;
+		VHT80|HE80) append network_data "max_oper_chwidth=1" "$N$T";;
+		VHT160|HE160) append network_data "max_oper_chwidth=2" "$N$T";;
+		VHT20|HE20|VHT40|HE40) append network_data "max_oper_chwidth=0" "$N$T";;
 		*) append network_data "disable_vht=1" "$N$T";;
 	esac
 }
