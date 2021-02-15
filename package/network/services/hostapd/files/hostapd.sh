@@ -335,6 +335,9 @@ hostapd_common_add_bss_config() {
 	config_add_array hostapd_bss_options
 
 	config_add_int rts_threshold
+	config_add_boolean request_cui
+	config_add_array radius_auth_req_attr
+	config_add_array radius_acct_req_attr
 }
 
 hostapd_set_vlan_file() {
@@ -462,6 +465,14 @@ append_airtime_sta_weight() {
 	[ -n "$1" ] && append bss_conf "airtime_sta_weight=$1" "$N"
 }
 
+append_radius_acct_req_attr() {
+	[ -n "$1" ] && append bss_conf "radius_acct_req_attr=$1" "$N"
+}
+
+append_radius_auth_req_attr() {
+	[ -n "$1" ] && append bss_conf "radius_auth_req_attr=$1" "$N"
+}
+
 hostapd_set_bss_options() {
 	local var="$1"
 	local phy="$2"
@@ -551,6 +562,7 @@ hostapd_set_bss_options() {
 			append bss_conf "acct_server_shared_secret=$acct_secret" "$N"
 		[ -n "$acct_interval" ] && \
 			append bss_conf "radius_acct_interim_interval=$acct_interval" "$N"
+		json_for_each_item append_radius_acct_req_attr radius_acct_req_attr
 	}
 
 	case "$auth_type" in
@@ -605,7 +617,7 @@ hostapd_set_bss_options() {
 				auth_server auth_secret auth_port \
 				dae_client dae_secret dae_port \
 				ownip radius_client_addr \
-				eap_reauth_period
+				eap_reauth_period request_cui
 
 			# radius can provide VLAN ID for clients
 			vlan_possible=1
@@ -617,7 +629,7 @@ hostapd_set_bss_options() {
 
 			set_default auth_port 1812
 			set_default dae_port 3799
-
+			set_default request_cui 0
 
 			append bss_conf "auth_server_addr=$auth_server" "$N"
 			append bss_conf "auth_server_port=$auth_port" "$N"
@@ -636,6 +648,8 @@ hostapd_set_bss_options() {
 			append bss_conf "ieee8021x=1" "$N"
 
 			[ "$eapol_version" -ge "1" -a "$eapol_version" -le "2" ] && append bss_conf "eapol_version=$eapol_version" "$N"
+			[ "$request_cui" -gt 0 ] && append bss_conf "radius_request_cui=$request_cui" "$N"
+			json_for_each_item append_radius_auth_req_attr radius_auth_req_attr
 		;;
 		wep)
 			local wep_keyidx=0
