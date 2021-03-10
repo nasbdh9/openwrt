@@ -85,9 +85,11 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
  create mode 100644 drivers/mtd/nandx/include/internal/nandx_util.h
  create mode 100644 drivers/mtd/nandx/include/uboot/nandx_os.h
 
+diff --git a/drivers/mtd/Kconfig b/drivers/mtd/Kconfig
+index 5e7571cf3d..34a59b44b9 100644
 --- a/drivers/mtd/Kconfig
 +++ b/drivers/mtd/Kconfig
-@@ -108,6 +108,13 @@ config HBMC_AM654
+@@ -101,6 +101,13 @@ config HBMC_AM654
  	 This is the driver for HyperBus controller on TI's AM65x and
  	 other SoCs
  
@@ -101,9 +103,11 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
  source "drivers/mtd/nand/Kconfig"
  
  source "drivers/mtd/spi/Kconfig"
+diff --git a/drivers/mtd/Makefile b/drivers/mtd/Makefile
+index 318788c5e2..1df1031b23 100644
 --- a/drivers/mtd/Makefile
 +++ b/drivers/mtd/Makefile
-@@ -41,3 +41,7 @@ obj-$(CONFIG_$(SPL_TPL_)SPI_FLASH_SUPPOR
+@@ -41,3 +41,7 @@ obj-$(CONFIG_$(SPL_TPL_)SPI_FLASH_SUPPORT) += spi/
  obj-$(CONFIG_SPL_UBI) += ubispl/
  
  endif
@@ -111,6 +115,8 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +ifeq ($(CONFIG_MTK_SPI_NAND), y)
 +include $(srctree)/drivers/mtd/nandx/Nandx.mk
 +endif
+diff --git a/drivers/mtd/nand/raw/nand.c b/drivers/mtd/nand/raw/nand.c
+index 026419e4e6..4be0c7d8f3 100644
 --- a/drivers/mtd/nand/raw/nand.c
 +++ b/drivers/mtd/nand/raw/nand.c
 @@ -91,8 +91,10 @@ static void nand_init_chip(int i)
@@ -124,6 +130,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
  
  	nand_register(i, mtd);
  }
+diff --git a/drivers/mtd/nandx/NOTICE b/drivers/mtd/nandx/NOTICE
+new file mode 100644
+index 0000000000..1a06ca3867
 --- /dev/null
 +++ b/drivers/mtd/nandx/NOTICE
 @@ -0,0 +1,52 @@
@@ -180,6 +189,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +
 +####################################################################################################
 \ No newline at end of file
+diff --git a/drivers/mtd/nandx/Nandx.config b/drivers/mtd/nandx/Nandx.config
+new file mode 100644
+index 0000000000..35705ee28d
 --- /dev/null
 +++ b/drivers/mtd/nandx/Nandx.config
 @@ -0,0 +1,17 @@
@@ -200,6 +212,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +NANDX_NFI_BASE := y
 +NANDX_NFI_ECC := y
 +NANDX_NFI_SPI := y
+diff --git a/drivers/mtd/nandx/Nandx.mk b/drivers/mtd/nandx/Nandx.mk
+new file mode 100644
+index 0000000000..f5a6f2a628
 --- /dev/null
 +++ b/drivers/mtd/nandx/Nandx.mk
 @@ -0,0 +1,91 @@
@@ -294,6 +309,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +clean:
 +	rm -rf $(sim-obj) nandx
 +endif
+diff --git a/drivers/mtd/nandx/README b/drivers/mtd/nandx/README
+new file mode 100644
+index 0000000000..0feaeaeb88
 --- /dev/null
 +++ b/drivers/mtd/nandx/README
 @@ -0,0 +1,31 @@
@@ -328,6 +346,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +    Any block of above graph can be extended at your will, if you
 +want add new feature into this code, please make sure that your code
 +would follow the framework, and we will be appreciated about it.
+diff --git a/drivers/mtd/nandx/core/Nandx.mk b/drivers/mtd/nandx/core/Nandx.mk
+new file mode 100644
+index 0000000000..7a5661c044
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/Nandx.mk
 @@ -0,0 +1,38 @@
@@ -369,6 +390,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +nandx-header-$(NANDX_NFI_ECC) += nfi/nfiecc_regs.h
 +nandx-header-$(NANDX_NFI_SPI) += nfi/nfi_spi.h
 +nandx-header-$(NANDX_NFI_SPI) += nfi/nfi_spi_regs.h
+diff --git a/drivers/mtd/nandx/core/core_io.c b/drivers/mtd/nandx/core/core_io.c
+new file mode 100644
+index 0000000000..716eeed38d
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/core_io.c
 @@ -0,0 +1,735 @@
@@ -1107,6 +1131,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	return ret;
 +}
 +#endif
+diff --git a/drivers/mtd/nandx/core/core_io.h b/drivers/mtd/nandx/core/core_io.h
+new file mode 100644
+index 0000000000..edcb60908a
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/core_io.h
 @@ -0,0 +1,39 @@
@@ -1149,6 +1176,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +};
 +
 +#endif /* __CORE_IO_H__ */
+diff --git a/drivers/mtd/nandx/core/nand/device_spi.c b/drivers/mtd/nandx/core/nand/device_spi.c
+new file mode 100644
+index 0000000000..db338c28c2
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand/device_spi.c
 @@ -0,0 +1,200 @@
@@ -1352,6 +1382,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	return &spi_nand[index].dev;
 +}
 +
+diff --git a/drivers/mtd/nandx/core/nand/device_spi.h b/drivers/mtd/nandx/core/nand/device_spi.h
+new file mode 100644
+index 0000000000..1676b61fc8
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand/device_spi.h
 @@ -0,0 +1,132 @@
@@ -1487,6 +1520,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +u8 spi_replace_tx_col_cycle(u8 mode);
 +
 +#endif /* __DEVICE_SPI_H__ */
+diff --git a/drivers/mtd/nandx/core/nand/nand_spi.c b/drivers/mtd/nandx/core/nand/nand_spi.c
+new file mode 100644
+index 0000000000..2ae03e1cf4
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand/nand_spi.c
 @@ -0,0 +1,526 @@
@@ -2016,6 +2052,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	nand_base_exit(spi->parent);
 +	mem_free(spi);
 +}
+diff --git a/drivers/mtd/nandx/core/nand/nand_spi.h b/drivers/mtd/nandx/core/nand/nand_spi.h
+new file mode 100644
+index 0000000000..e55e4de6f7
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand/nand_spi.h
 @@ -0,0 +1,35 @@
@@ -2054,6 +2093,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +}
 +
 +#endif /* __NAND_SPI_H__ */
+diff --git a/drivers/mtd/nandx/core/nand_base.c b/drivers/mtd/nandx/core/nand_base.c
+new file mode 100644
+index 0000000000..65998e5460
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand_base.c
 @@ -0,0 +1,304 @@
@@ -2361,6 +2403,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	nfi_exit(base->nfi);
 +	mem_free(base);
 +}
+diff --git a/drivers/mtd/nandx/core/nand_base.h b/drivers/mtd/nandx/core/nand_base.h
+new file mode 100644
+index 0000000000..13217978e5
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand_base.h
 @@ -0,0 +1,71 @@
@@ -2435,6 +2480,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +int nand_detect_device(struct nand_base *nand);
 +
 +#endif /* __NAND_BASE_H__ */
+diff --git a/drivers/mtd/nandx/core/nand_chip.c b/drivers/mtd/nandx/core/nand_chip.c
+new file mode 100644
+index 0000000000..02adc6f52e
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand_chip.c
 @@ -0,0 +1,272 @@
@@ -2710,6 +2758,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	nand_exit(chip->nand);
 +	mem_free(chip);
 +}
+diff --git a/drivers/mtd/nandx/core/nand_chip.h b/drivers/mtd/nandx/core/nand_chip.h
+new file mode 100644
+index 0000000000..3e9c8e6ca3
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand_chip.h
 @@ -0,0 +1,103 @@
@@ -2816,6 +2867,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +struct nand_chip *nand_chip_init(struct nfi_resource *res);
 +void nand_chip_exit(struct nand_chip *chip);
 +#endif /* __NAND_CHIP_H__ */
+diff --git a/drivers/mtd/nandx/core/nand_device.c b/drivers/mtd/nandx/core/nand_device.c
+new file mode 100644
+index 0000000000..9f6764d1bc
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand_device.c
 @@ -0,0 +1,285 @@
@@ -3104,6 +3158,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	return 0;
 +}
 +
+diff --git a/drivers/mtd/nandx/core/nand_device.h b/drivers/mtd/nandx/core/nand_device.h
+new file mode 100644
+index 0000000000..e142cf529d
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nand_device.h
 @@ -0,0 +1,608 @@
@@ -3715,6 +3772,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +
 +struct nand_device *nand_get_device(int index);
 +#endif /* __NAND_DEVICE_H__ */
+diff --git a/drivers/mtd/nandx/core/nfi.h b/drivers/mtd/nandx/core/nfi.h
+new file mode 100644
+index 0000000000..ba84e73ccc
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi.h
 @@ -0,0 +1,51 @@
@@ -3769,6 +3829,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +void nfi_exit(struct nfi *nfi);
 +
 +#endif /* __NFI_H__ */
+diff --git a/drivers/mtd/nandx/core/nfi/nfi_base.c b/drivers/mtd/nandx/core/nfi/nfi_base.c
+new file mode 100644
+index 0000000000..d8679d7aa3
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfi_base.c
 @@ -0,0 +1,1357 @@
@@ -5129,6 +5192,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	nfi_extend_exit(nb);
 +}
 +
+diff --git a/drivers/mtd/nandx/core/nfi/nfi_base.h b/drivers/mtd/nandx/core/nfi/nfi_base.h
+new file mode 100644
+index 0000000000..ae894eaa31
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfi_base.h
 @@ -0,0 +1,95 @@
@@ -5227,6 +5293,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +void nfi_extend_exit(struct nfi_base *nb);
 +
 +#endif /* __NFI_BASE_H__ */
+diff --git a/drivers/mtd/nandx/core/nfi/nfi_regs.h b/drivers/mtd/nandx/core/nfi/nfi_regs.h
+new file mode 100644
+index 0000000000..ba4868acc8
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfi_regs.h
 @@ -0,0 +1,114 @@
@@ -5344,6 +5413,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +
 +#endif /* __NFI_REGS_H__ */
 +
+diff --git a/drivers/mtd/nandx/core/nfi/nfi_spi.c b/drivers/mtd/nandx/core/nfi/nfi_spi.c
+new file mode 100644
+index 0000000000..67cd0aaad9
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfi_spi.c
 @@ -0,0 +1,689 @@
@@ -6036,6 +6108,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	mem_free(nfi_spi);
 +}
 +
+diff --git a/drivers/mtd/nandx/core/nfi/nfi_spi.h b/drivers/mtd/nandx/core/nfi/nfi_spi.h
+new file mode 100644
+index 0000000000..a52255663a
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfi_spi.h
 @@ -0,0 +1,44 @@
@@ -6083,6 +6158,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +};
 +
 +#endif /* __NFI_SPI_H__ */
+diff --git a/drivers/mtd/nandx/core/nfi/nfi_spi_regs.h b/drivers/mtd/nandx/core/nfi/nfi_spi_regs.h
+new file mode 100644
+index 0000000000..77adf46782
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfi_spi_regs.h
 @@ -0,0 +1,64 @@
@@ -6150,6 +6228,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +#define SPI_GPRAM_ADDR          0x800
 +
 +#endif /* __NFI_SPI_REGS_H__ */
+diff --git a/drivers/mtd/nandx/core/nfi/nfiecc.c b/drivers/mtd/nandx/core/nfi/nfiecc.c
+new file mode 100644
+index 0000000000..14246fbc3e
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfiecc.c
 @@ -0,0 +1,510 @@
@@ -6663,6 +6744,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +	mem_free(ecc);
 +}
 +
+diff --git a/drivers/mtd/nandx/core/nfi/nfiecc.h b/drivers/mtd/nandx/core/nfi/nfiecc.h
+new file mode 100644
+index 0000000000..b02a5c3534
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfiecc.h
 @@ -0,0 +1,90 @@
@@ -6756,6 +6840,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +void nfiecc_exit(struct nfiecc *ecc);
 +
 +#endif /* __NFIECC_H__ */
+diff --git a/drivers/mtd/nandx/core/nfi/nfiecc_regs.h b/drivers/mtd/nandx/core/nfi/nfiecc_regs.h
+new file mode 100644
+index 0000000000..96564cf872
 --- /dev/null
 +++ b/drivers/mtd/nandx/core/nfi/nfiecc_regs.h
 @@ -0,0 +1,51 @@
@@ -6810,6 +6897,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +#define NFIECC_DECEL(x)         (0x120 + (x) * 4)
 +
 +#endif /* __NFIECC_REGS_H__ */
+diff --git a/drivers/mtd/nandx/driver/Nandx.mk b/drivers/mtd/nandx/driver/Nandx.mk
+new file mode 100644
+index 0000000000..3fb93d37c5
 --- /dev/null
 +++ b/drivers/mtd/nandx/driver/Nandx.mk
 @@ -0,0 +1,18 @@
@@ -6831,6 +6921,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +nandx-$(NANDX_KERNEL_SUPPORT) += kernel/driver.c
 +nandx-$(NANDX_LK_SUPPORT) += lk/driver.c
 +nandx-$(NANDX_UBOOT_SUPPORT) += uboot/driver.c
+diff --git a/drivers/mtd/nandx/driver/bbt/bbt.c b/drivers/mtd/nandx/driver/bbt/bbt.c
+new file mode 100644
+index 0000000000..c9d4823e09
 --- /dev/null
 +++ b/drivers/mtd/nandx/driver/bbt/bbt.c
 @@ -0,0 +1,408 @@
@@ -7242,6 +7335,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +
 +	return get_bbt_mark(g_bbt_manager.bbt, block) != BBT_BLOCK_GOOD;
 +}
+diff --git a/drivers/mtd/nandx/driver/uboot/driver.c b/drivers/mtd/nandx/driver/uboot/driver.c
+new file mode 100644
+index 0000000000..7bd3342452
 --- /dev/null
 +++ b/drivers/mtd/nandx/driver/uboot/driver.c
 @@ -0,0 +1,574 @@
@@ -7819,6 +7915,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +MODULE_LICENSE("GPL v2");
 +MODULE_DESCRIPTION("MTK Nand Flash Controller Driver");
 +MODULE_AUTHOR("MediaTek");
+diff --git a/drivers/mtd/nandx/include/Nandx.mk b/drivers/mtd/nandx/include/Nandx.mk
+new file mode 100644
+index 0000000000..667402790e
 --- /dev/null
 +++ b/drivers/mtd/nandx/include/Nandx.mk
 @@ -0,0 +1,16 @@
@@ -7838,6 +7937,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +nandx-header-$(NANDX_LK_SUPPORT) += lk/nandx_os.h
 +nandx-header-$(NANDX_KERNEL_SUPPORT) += kernel/nandx_os.h
 +nandx-header-$(NANDX_UBOOT_SUPPORT) += uboot/nandx_os.h
+diff --git a/drivers/mtd/nandx/include/internal/bbt.h b/drivers/mtd/nandx/include/internal/bbt.h
+new file mode 100644
+index 0000000000..4676def1f5
 --- /dev/null
 +++ b/drivers/mtd/nandx/include/internal/bbt.h
 @@ -0,0 +1,62 @@
@@ -7903,6 +8005,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +int bbt_is_bad(struct nandx_info *nand, off_t offset);
 +
 +#endif /*__BBT_H__*/
+diff --git a/drivers/mtd/nandx/include/internal/nandx_core.h b/drivers/mtd/nandx/include/internal/nandx_core.h
+new file mode 100644
+index 0000000000..09aff72224
 --- /dev/null
 +++ b/drivers/mtd/nandx/include/internal/nandx_core.h
 @@ -0,0 +1,250 @@
@@ -8156,6 +8261,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +#endif
 +
 +#endif /* __NANDX_CORE_H__ */
+diff --git a/drivers/mtd/nandx/include/internal/nandx_errno.h b/drivers/mtd/nandx/include/internal/nandx_errno.h
+new file mode 100644
+index 0000000000..51fb299c03
 --- /dev/null
 +++ b/drivers/mtd/nandx/include/internal/nandx_errno.h
 @@ -0,0 +1,40 @@
@@ -8199,6 +8307,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +#endif
 +
 +#endif /* __NANDX_ERRNO_H__ */
+diff --git a/drivers/mtd/nandx/include/internal/nandx_util.h b/drivers/mtd/nandx/include/internal/nandx_util.h
+new file mode 100644
+index 0000000000..1990b000ee
 --- /dev/null
 +++ b/drivers/mtd/nandx/include/internal/nandx_util.h
 @@ -0,0 +1,221 @@
@@ -8423,6 +8534,9 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +}
 +
 +#endif /* __NANDX_UTIL_H__ */
+diff --git a/drivers/mtd/nandx/include/uboot/nandx_os.h b/drivers/mtd/nandx/include/uboot/nandx_os.h
+new file mode 100644
+index 0000000000..8ea53378bf
 --- /dev/null
 +++ b/drivers/mtd/nandx/include/uboot/nandx_os.h
 @@ -0,0 +1,78 @@
@@ -8504,6 +8618,8 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
 +}
 +
 +#endif /* __NANDX_OS_H__ */
+diff --git a/include/configs/mt7622.h b/include/configs/mt7622.h
+index dfd506ed24..6d0c956484 100644
 --- a/include/configs/mt7622.h
 +++ b/include/configs/mt7622.h
 @@ -11,6 +11,31 @@
@@ -8538,3 +8654,6 @@ Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
  #define CONFIG_SYS_MAXARGS		8
  #define CONFIG_SYS_BOOTM_LEN		SZ_64M
  #define CONFIG_SYS_CBSIZE		SZ_1K
+-- 
+2.17.1
+

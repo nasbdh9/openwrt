@@ -1,7 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2006-2010 OpenWrt.org
 # Copyright (C) 2016 LEDE Project
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
 
 ifneq ($(__rules_inc),1)
 __rules_inc=1
@@ -428,10 +431,8 @@ $(shell \
 )
 endef
 
-abi_version_str = $(subst -,,$(subst _,,$(subst .,,$(1))))
-
-COMMITCOUNT = $(if $(DUMP),0,$(call commitcount))
-AUTORELEASE = $(if $(DUMP),0,$(call commitcount,1))
+COMMITCOUNT = $(if $(DUMP),,$(call commitcount))
+AUTORELEASE = $(if $(DUMP),,$(call commitcount,1))
 
 all:
 FORCE: ;

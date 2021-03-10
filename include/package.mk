@@ -1,6 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2006-2020 OpenWrt.org
+# Copyright (C) 2006-2008 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
 
 __package_mk:=1
 
@@ -58,7 +61,7 @@ include $(INCLUDE_DIR)/quilt.mk
 
 find_library_dependencies = \
 	$(wildcard $(patsubst %,$(STAGING_DIR)/pkginfo/%.version, \
-		$(filter-out $(BUILD_PACKAGES), $(sort $(foreach dep4, \
+		$(sort $(foreach dep4, \
 			$(sort $(foreach dep3, \
 				$(sort $(foreach dep2, \
 					$(sort $(foreach dep1, \
@@ -73,7 +76,7 @@ find_library_dependencies = \
 				$(Package/$(dep3)/depends) $(dep3) \
 			)), \
 			$(Package/$(dep4)/depends) $(dep4) \
-		))) \
+		)), \
 	))
 
 

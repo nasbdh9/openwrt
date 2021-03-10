@@ -1,3 +1,5 @@
+DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_HW_ID
+
 define Build/netgear-rootfs
 	mkimage \
 		-A mips -O linux -T filesystem -C none \

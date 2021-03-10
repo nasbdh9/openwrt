@@ -5,12 +5,6 @@
 	#size-cells = <1>;
 	compatible = "ralink,rt3883-soc";
 
-	aliases {
-		spi0 = &spi0;
-		spi1 = &spi1;
-		serial0 = &uartlite;
-	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -23,6 +17,12 @@
 
 	chosen {
 		bootargs = "console=ttyS0,57600";
+	};
+
+	aliases {
+		spi0 = &spi0;
+		spi1 = &spi1;
+		serial0 = &uartlite;
 	};
 
 	cpuintc: cpuintc {

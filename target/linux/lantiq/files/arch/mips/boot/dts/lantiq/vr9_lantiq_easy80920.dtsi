@@ -15,6 +15,9 @@
 		led-failsafe = &power;
 		led-running = &power;
 		led-upgrade = &power;
+
+		led-usb = &led_usb1;
+		led-usb2 = &led_usb2;
 	};
 
 	memory@0 {
@@ -61,18 +64,13 @@
 			label = "green:fxo";
 			gpios = <&stp 19 GPIO_ACTIVE_HIGH>;
 		};
-		usb1 {
+		led_usb1: usb1 {
 			label = "green:usb1";
 			gpios = <&stp 18 GPIO_ACTIVE_HIGH>;
-			trigger-sources = <&ehci_port1>;
-			linux,default-trigger = "usbport";
 		};
-
-		usb2 {
+		led_usb2: usb2 {
 			label = "green:usb2";
 			gpios = <&stp 15 GPIO_ACTIVE_HIGH>;
-			trigger-sources = <&ehci_port2>;
-			linux,default-trigger = "usbport";
 		};
 		sd {
 			label = "green:sd";

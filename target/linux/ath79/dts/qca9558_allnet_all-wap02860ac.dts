@@ -139,6 +139,10 @@
 	};
 };
 
+&uart {
+	status = "okay";
+};
+
 &wmac {
 	status = "okay";
 

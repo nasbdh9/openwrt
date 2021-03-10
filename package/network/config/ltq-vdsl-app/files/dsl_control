@@ -4,11 +4,10 @@
 START=97
 USE_PROCD=1
 
-dslstat() {
-	ubus call dsl metrics
-}
-
 extra_command "dslstat" "Get DSL status information"
+extra_command "lucistat" "Get status information in lua friendly format"
+
+. /lib/functions/lantiq_dsl.sh
 
 #
 # ITU-T G.997.1 (06/2012) - Section 7.3.1.1.1 (xTU transmission system enabling (XTSE))
@@ -308,6 +307,8 @@ start_service() {
 }
 
 stop_service() {
+	# do not use dsl_cmd to not block when this is locked up by some other proess
+	echo quit > /tmp/pipe/dsl_cpe0_cmd
 	DSL_NOTIFICATION_TYPE="DSL_INTERFACE_STATUS" \
 	DSL_INTERFACE_STATUS="DOWN" \
 		/sbin/dsl_notify.sh

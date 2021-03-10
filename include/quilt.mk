@@ -1,6 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2007-2020 OpenWrt.org
+# Copyright (C) 2007-2009 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
 
 ifeq ($(TARGET_BUILD),1)
   PKG_BUILD_DIR:=$(LINUX_DIR)

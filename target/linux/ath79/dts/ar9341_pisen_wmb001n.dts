@@ -11,6 +11,7 @@
 	compatible = "pisen,wmb001n", "qca,ar9341";
 
 	aliases {
+		serial0 = &uart;
 		led-boot = &led_wifi;
 		led-failsafe = &led_wifi;
 		led-running = &led_wifi;
@@ -128,6 +129,10 @@
 
 &ref {
 	clock-frequency = <25000000>;
+};
+
+&uart {
+	status = "okay";
 };
 
 &spi {

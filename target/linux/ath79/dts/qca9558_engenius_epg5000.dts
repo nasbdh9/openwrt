@@ -153,6 +153,10 @@
 	};
 };
 
+&uart {
+	status = "okay";
+};
+
 &usb_phy1 {
 	status = "okay";
 };

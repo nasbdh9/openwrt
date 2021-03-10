@@ -128,6 +128,10 @@
 	clock-frequency = <40000000>;
 };
 
+&uart {
+	status = "okay";
+};
+
 &eth0 {
 	status = "okay";
 

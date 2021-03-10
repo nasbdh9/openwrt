@@ -260,3 +260,7 @@
 		gpio-controller;
 	};
 };
+
+&uart {
+	status = "okay";
+};

@@ -95,8 +95,7 @@ define Package/libelf/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libelf{-*.so,*.so.*} $(1)/usr/lib/
 endef
 
-# these lines need to be ordered by dependency because of ABI versioning
-$(eval $(call BuildPackage,libelf))
-$(eval $(call BuildPackage,libdw))
 $(eval $(call BuildPackage,libasm))
+$(eval $(call BuildPackage,libdw))
+$(eval $(call BuildPackage,libelf))
 $(eval $(call HostBuild))

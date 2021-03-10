@@ -13,6 +13,9 @@
 		led-dsl = &led_dsl;
 		led-internet = &led_internet;
 		led-wifi = &led_wlan5g;
+
+		led-usb = &led_usb;
+		led-usb2 = &led_usb;
 	};
 
 	memory@0 {
@@ -63,11 +66,9 @@
 			gpios = <&gpio 5 GPIO_ACTIVE_LOW>;
 		};
 
-		usb {
+		led_usb: usb {
 			label = "blue:usb";
 			gpios = <&gpio 25 GPIO_ACTIVE_LOW>;
-			trigger-sources = <&ehci_port1>, <&ehci_port2>;
-			linux,default-trigger = "usbport";
 		};
 
 		eth {

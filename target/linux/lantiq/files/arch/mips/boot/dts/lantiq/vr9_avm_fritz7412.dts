@@ -195,7 +195,7 @@
 		ethernet@2 {
 			compatible = "lantiq,xrx200-pdi-port";
 			reg = <2>;
-			phy-mode = "mii";
+			phy-mode = "gmii";
 			phy-handle = <&phy11>;
 		};
 	};

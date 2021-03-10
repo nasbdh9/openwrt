@@ -11,6 +11,7 @@
 		led-boot = &led_vpn;
 		led-failsafe = &led_vpn;
 		led-upgrade = &led_vpn;
+		serial0 = &uart;
 	};
 
 	keys {
@@ -108,6 +109,10 @@
 			};
 		};
 	};
+};
+
+&uart {
+	status = "okay";
 };
 
 &usb {

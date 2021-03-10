@@ -10,6 +10,7 @@
 	model = "COMFAST CF-E120A v3";
 
 	aliases {
+		serial0 = &uart;
 		led-boot = &led_rssihigh;
 		led-failsafe = &led_rssihigh;
 		led-upgrade = &led_rssihigh;
@@ -115,6 +116,10 @@
 			};
 		};
 	};
+};
+
+&uart {
+	status = "okay";
 };
 
 &eth0 {

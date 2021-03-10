@@ -120,6 +120,10 @@
 	status = "okay";
 };
 
+&uart {
+	status = "okay";
+};
+
 &pll {
 	clocks = <&extosc>;
 };

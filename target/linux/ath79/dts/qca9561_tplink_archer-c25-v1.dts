@@ -163,6 +163,10 @@
 	};
 };
 
+&uart {
+	status = "okay";
+};
+
 &pcie {
 	status = "okay";
 };

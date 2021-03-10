@@ -11,6 +11,7 @@
 	};
 
 	aliases {
+		serial0 = &uart;
 		led-boot = &led_power_blue;
 		led-failsafe = &led_power_blue;
 		led-running = &led_power_blue;
@@ -79,6 +80,10 @@
 
 &ref {
 	clock-frequency = <40000000>;
+};
+
+&uart {
+	status = "okay";
 };
 
 &pinmux {

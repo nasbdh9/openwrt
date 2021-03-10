@@ -25,6 +25,10 @@
 	clock-frequency = <40000000>;
 };
 
+&uart {
+	status = "okay";
+};
+
 &pcie {
 	status = "okay";
 };

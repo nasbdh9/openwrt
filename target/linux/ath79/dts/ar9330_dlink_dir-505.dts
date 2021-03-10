@@ -10,6 +10,7 @@
 	compatible = "dlink,dir-505", "qca,ar9330";
 
 	aliases {
+		serial0 = &uart;
 		led-boot = &led_power_green;
 		led-failsafe = &led_status_red;
 		led-running = &led_power_green;
@@ -47,6 +48,10 @@
 			gpios = <&gpio 26 GPIO_ACTIVE_LOW>;
 		};
 	};
+};
+
+&uart {
+	status = "okay";
 };
 
 &gpio {

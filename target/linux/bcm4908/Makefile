@@ -20,6 +20,4 @@ include $(INCLUDE_DIR)/target.mk
 
 KERNELNAME:=Image dtbs
 
-DEFAULT_PACKAGES += kmod-usb-ohci kmod-usb2 kmod-usb3
-
 $(eval $(call BuildTarget))

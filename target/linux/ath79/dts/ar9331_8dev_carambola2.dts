@@ -10,6 +10,7 @@
 	compatible = "8dev,carambola2", "qca,ar9331";
 
 	aliases {
+		serial0 = &uart;
 		label-mac-device = &wmac;
 	};
 
@@ -46,6 +47,10 @@
 
 &ref {
 	clock-frequency = <40000000>;
+};
+
+&uart {
+	status = "okay";
 };
 
 &usb {

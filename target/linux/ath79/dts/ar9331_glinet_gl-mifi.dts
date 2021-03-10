@@ -10,6 +10,7 @@
 	model = "GL.iNet GL-MiFi";
 
 	aliases {
+		serial0 = &uart;
 		label-mac-device = &eth0;
 	};
 
@@ -66,6 +67,10 @@
 			gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
 		};
 	};
+};
+
+&uart {
+	status = "okay";
 };
 
 &usb {

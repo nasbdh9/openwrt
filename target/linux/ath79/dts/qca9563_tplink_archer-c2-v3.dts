@@ -92,6 +92,10 @@
 	};
 };
 
+&uart {
+	status = "okay";
+};
+
 &spi {
 	status = "okay";
 

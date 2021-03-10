@@ -5,10 +5,9 @@ PKG_RELEASE=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/libubox.git
-PKG_MIRROR_HASH:=042398d1295ac892e09c6d2e8f68861c6f859fc6752e809a114f451834e7a05e
-PKG_SOURCE_DATE:=2021-03-02
-PKG_SOURCE_VERSION:=2e52c7e9a90ab7ba1cf9d2986d1505ca5d184698
-PKG_ABI_VERSION:=$(call abi_version_str,$(PKG_SOURCE_DATE))
+PKG_MIRROR_HASH:=97dc4eba01cf2c5d6a6d0db3747e0cdc0d95cb87e51b3115272e7d3e69a8b255
+PKG_SOURCE_DATE:=2020-12-12
+PKG_SOURCE_VERSION:=357877693ca363b12e6e7e14d345639b2440cd07
 CMAKE_INSTALL:=1
 
 PKG_LICENSE:=ISC
@@ -28,7 +27,7 @@ define Package/libubox
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=Basic utility library
-  ABI_VERSION:=$(PKG_ABI_VERSION)
+  ABI_VERSION:=20201212
   DEPENDS:=
 endef
 
@@ -36,7 +35,6 @@ define Package/libblobmsg-json
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=blobmsg <-> json conversion library
-  ABI_VERSION:=$(PKG_ABI_VERSION)
   DEPENDS:=+libjson-c +libubox
 endef
 
@@ -55,7 +53,6 @@ define Package/libjson-script
   SECTION:=utils
   CATEGORY:=Utilities
   DEPENDS:=+libubox
-  ABI_VERSION:=$(PKG_ABI_VERSION)
   TITLE:=Minimalistic JSON based scripting engine
 endef
 
@@ -68,17 +65,16 @@ endef
 
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
 CMAKE_OPTIONS = \
-	-DLUAPATH=/usr/lib/lua \
-	-DABIVERSION="$(PKG_ABI_VERSION)"
+	-DLUAPATH=/usr/lib/lua
 
 define Package/libubox/install
 	$(INSTALL_DIR) $(1)/lib/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libubox.so.* $(1)/lib/
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libubox.so $(1)/lib/
 endef
 
 define Package/libblobmsg-json/install
 	$(INSTALL_DIR) $(1)/lib/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libblobmsg_json.so.* $(1)/lib/
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libblobmsg_json.so $(1)/lib/
 endef
 
 define Package/jshn/install
@@ -89,7 +85,7 @@ endef
 
 define Package/libjson-script/install
 	$(INSTALL_DIR) $(1)/lib/
-	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libjson_script.so.* $(1)/lib/
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libjson_script.so $(1)/lib/
 endef
 
 define Package/libubox-lua/install
