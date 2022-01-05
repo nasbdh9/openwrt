@@ -1110,6 +1110,33 @@ endef
 
 $(eval $(call KernelPackage,tcp-hybla))
 
+define KernelPackage/tcp-dctcp
+  SUBMENU:=$(NETWORK_SUPPORT_MENU)
+  TITLE:=DataCenter TCP (DCTCP)
+  KCONFIG:=CONFIG_TCP_CONG_DCTCP
+  FILES:=$(LINUX_DIR)/net/ipv4/tcp_dctcp.ko
+  AUTOLOAD:=$(call AutoProbe,tcp_dctcp)
+endef
+
+define KernelPackage/tcp-dctcp/description
+  DCTCP leverages Explicit Congestion Notification (ECN) in the network to
+  provide multi-bit feedback to the end hosts. It is designed to provide:
+
+  - High burst tolerance (incast due to partition/aggregate),
+  - Low latency (short flows, queries),
+  - High throughput (continuous data updates, large file transfers) with
+  commodity, shallow-buffered switches.
+
+  All switches in the data center network running DCTCP must support
+  ECN marking and be configured for marking when reaching defined switch
+  buffer thresholds. The default ECN marking threshold heuristic for
+  DCTCP on switches is 20 packets (30KB) at 1Gbps, and 65 packets
+  (~100KB) at 10Gbps, but might need further careful tweaking.
+
+  For further details see:
+   http://simula.stanford.edu/~alizade/Site/DCTCP_files/dctcp-final.pdf
+endef
+$(eval $(call KernelPackage,tcp-dctcp))
 
 define KernelPackage/tcp-scalable
   SUBMENU:=$(NETWORK_SUPPORT_MENU)
