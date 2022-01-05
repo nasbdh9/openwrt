@@ -295,19 +295,16 @@ menu "Target Images"
 		bool "Build VirtualBox image files (VDI)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
 
 	config VMDK_IMAGES
 		bool "Build VMware image files (VMDK)"
 		depends on TARGET_x86 || TARGET_armsr
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
 
 	config VHDX_IMAGES
 		bool "Build Hyper-V image files (VHDX)"
 		depends on TARGET_x86
 		depends on GRUB_IMAGES || GRUB_EFI_IMAGES
-		select PACKAGE_kmod-e1000
 
 	config TARGET_SERIAL
 		string "Serial port device"
