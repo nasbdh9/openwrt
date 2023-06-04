@@ -5,4 +5,7 @@ noaccomp
 nopcomp
 nocrtscts
 lock
+asyncmap 0
+persist
+holdoff 2
 maxfail 0

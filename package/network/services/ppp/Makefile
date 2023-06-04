@@ -9,26 +9,27 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ppp
-PKG_RELEASE:=5
+PKG_RELEASE:=4
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/paulusmack/ppp
-PKG_SOURCE_DATE:=2021-01-04
-PKG_SOURCE_VERSION:=4fb319056f168bb8379865b91b4fd3e1ada73f1e
-PKG_MIRROR_HASH:=429cb5fcff36e1d8698766130711d4764347f08b83233dfb4831bea21616efef
+PKG_SOURCE_URL:=https://github.com/ppp-project/ppp
+PKG_SOURCE_DATE:=2023-05-01
+PKG_SOURCE_VERSION:=ba45e718cb5d0fa11d3a59283aa64dad6afb3653
+PKG_MIRROR_HASH:=32283dda233c80d921dc5d39cab6cd0a1324030fc0c414eaa9d8d72c7dbfb049
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-4-Clause
 PKG_CPE_ID:=cpe:/a:samba:ppp
 
-PKG_RELEASE_VERSION:=2.4.9
+PKG_RELEASE_VERSION:=2.5.1-dev
 PKG_VERSION:=$(PKG_RELEASE_VERSION).git-$(PKG_SOURCE_DATE)
 
-PKG_BUILD_DEPENDS:=libpcap
+PKG_BUILD_DEPENDS:=libpcap openssl
 
 PKG_ASLR_PIE_REGULAR:=1
 PKG_BUILD_FLAGS:=gc-sections lto
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -175,41 +176,31 @@ not initiate a session. Can be useful to debug pppoe.
 endef
 
 
-define Build/Configure
-$(call Build/Configure/Default,, \
-	UNAME_S="Linux" \
-	UNAME_R="$(LINUX_VERSION)" \
-	UNAME_M="$(ARCH)" \
-)
-	mkdir -p $(PKG_BUILD_DIR)/pppd/plugins/pppoatm/linux
-	$(CP) \
-		$(LINUX_DIR)/include/linux/compiler.h \
-		$(LINUX_DIR)/include/$(LINUX_UAPI_DIR)linux/atm*.h \
-		$(PKG_BUILD_DIR)/pppd/plugins/pppoatm/linux/
+TARGET_CFLAGS += -fPIC
+TARGET_CFLAGS += -ggdb3
 
-	# Kernel 4.14.9+ only, ignore the exit status of cp in case the file
-	# doesn't exits
-	-$(CP) $(LINUX_DIR)/include/linux/compiler_types.h \
-		$(PKG_BUILD_DIR)/pppd/plugins/pppoatm/linux/
-endef
-
-MAKE_FLAGS += COPTS="$(TARGET_CFLAGS)" \
-		PRECOMPILED_FILTER=1 \
-		STAGING_DIR="$(STAGING_DIR)"
+# precompiled filter --with-openssl=$(STAGING_DIR)/usr
+CONFIGURE_ARGS += \
+	--disable-systemd \
+	--enable-microsoft-extensions \
+	$(call autoconf_bool,CONFIG_IPV6,ipv6cp) \
+	--disable-eaptls \
+	--disable-peap \
+	--without-gtk \
+	--without-srp \
+	--with-pcap=$(STAGING_DIR)/usr \
+	--with-precompiled-filter \
+	--without-openssl
 
 ifeq ($(BUILD_VARIANT),multilink)
-  MAKE_FLAGS += HAVE_MULTILINK=y
+  CONFIGURE_ARGS += --enable-multilink
 else
-  MAKE_FLAGS += HAVE_MULTILINK=
-endif
-
-ifdef CONFIG_USE_MUSL
-  MAKE_FLAGS += USE_LIBUTIL=
+  CONFIGURE_ARGS += --disable-multilink
 endif
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/include/pppd $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/pppd $(1)/usr/include/
 endef
 
 define Package/ppp/script_install
@@ -218,7 +209,7 @@ endef
 define Package/ppp/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/sbin/pppd $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/pppd $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/ppp
 	$(INSTALL_CONF) ./files/etc/ppp/chap-secrets $(1)/etc/ppp/
 	$(INSTALL_DATA) ./files/etc/ppp/filter $(1)/etc/ppp/
@@ -234,19 +225,19 @@ Package/ppp-multilink/install=$(Package/ppp/install)
 
 define Package/ppp-mod-pppoa/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_RELEASE_VERSION)/pppoatm.so \
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/pppoatm.so \
 		$(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/
 endef
 
 define Package/ppp-mod-pppoe/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_RELEASE_VERSION)/pppoe.so \
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/pppoe.so \
 		$(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/
 endef
 
 define Package/ppp-mod-radius/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_RELEASE_VERSION)/radius.so \
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/radius.so \
 		$(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/
 	$(INSTALL_DIR) $(1)/etc/ppp
 	$(INSTALL_DATA) ./files/etc/ppp/radius.conf $(1)/etc/ppp/
@@ -259,13 +250,13 @@ endef
 
 define Package/ppp-mod-pppol2tp/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_RELEASE_VERSION)/pppol2tp.so \
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/pppol2tp.so \
 		$(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/
 endef
 
 define Package/ppp-mod-pptp/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_RELEASE_VERSION)/pptp.so \
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/pptp.so \
 		$(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/
 	$(INSTALL_DIR) $(1)/etc/ppp
 	$(INSTALL_DATA) ./files/etc/ppp/options.pptp $(1)/etc/ppp/
@@ -273,28 +264,28 @@ endef
 
 define Package/ppp-mod-passwordfd/install
 	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_RELEASE_VERSION)/passwordfd.so \
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/passwordfd.so \
 		$(1)/usr/lib/pppd/$(PKG_RELEASE_VERSION)/
 endef
 
 define Package/chat/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/sbin/chat $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/chat $(1)/usr/sbin/
 endef
 
 define Package/pppdump/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/sbin/pppdump $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/pppdump $(1)/usr/sbin/
 endef
 
 define Package/pppstats/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/sbin/pppstats $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/pppstats $(1)/usr/sbin/
 endef
 
 define Package/pppoe-discovery/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/sbin/pppoe-discovery $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/pppoe-discovery $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,ppp))
