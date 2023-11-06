@@ -1,0 +1,35 @@
+From 3e6544ca6eee6290bbc7cd5c02be42b69405d04d Mon Sep 17 00:00:00 2001
+From: Tan Zien <nabsdh9@gmail.com>
+Date: Tue, 7 Nov 2023 03:04:25 +0800
+Subject: [PATCH] arm64: rk3399: NanoPi R4s DDR3 1G
+
+---
+ arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi | 2 +-
+ configs/nanopi-r4s-rk3399_defconfig        | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi b/arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi
+index cd1642527b..caa81eaace 100644
+--- a/arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-nanopi-r4s-u-boot.dtsi
+@@ -13,4 +13,4 @@
+  */
+ 
+ #include "rk3399-nanopi4-u-boot.dtsi"
+-#include "rk3399-sdram-lpddr4-100.dtsi"
++#include "rk3399-sdram-ddr3-1866.dtsi"
+diff --git a/configs/nanopi-r4s-rk3399_defconfig b/configs/nanopi-r4s-rk3399_defconfig
+index 351d2eb553..f41e911aa4 100644
+--- a/configs/nanopi-r4s-rk3399_defconfig
++++ b/configs/nanopi-r4s-rk3399_defconfig
+@@ -38,7 +38,6 @@ CONFIG_PMIC_RK8XX=y
+ CONFIG_REGULATOR_PWM=y
+ CONFIG_REGULATOR_RK8XX=y
+ CONFIG_PWM_ROCKCHIP=y
+-CONFIG_RAM_RK3399_LPDDR4=y
+ CONFIG_BAUDRATE=1500000
+ CONFIG_DEBUG_UART_SHIFT=2
+ CONFIG_SYSRESET=y
+-- 
+2.34.1
+
