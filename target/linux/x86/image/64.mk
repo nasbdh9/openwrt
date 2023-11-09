@@ -8,3 +8,17 @@ define Device/generic
   GRUB2_VARIANT := generic
 endef
 TARGET_DEVICES += generic
+
+define Device/nvidia_spectrum
+  DEVICE_VENDOR := NVIDIA
+  DEVICE_MODEL := Spectrum Platform
+  DEVICE_PACKAGES += \
+  	kmod-e1000e kmod-igb kmod-ixgbe kmod-mlx5-core kmod-fs-vfat \
+  	kmod-mlxsw-core kmod-mlxsw-pci kmod-mlxsw-i2c \
+  	kmod-mlxsw-spectrum kmod-mlxsw-minimal kmod-mlxfw \
+  	kmod-leds-mlxcpld kmod-lib-objagg kmod-lib-parman \
+  	kmod-hwmon-coretemp kmod-hwmon-drivetemp kmod-hwmon-jc42 \
+  	kmod-i2c-i801 mlxsw_spectrum-firmware
+  GRUB2_VARIANT := generic
+endef
+TARGET_DEVICES += nvidia_spectrum
