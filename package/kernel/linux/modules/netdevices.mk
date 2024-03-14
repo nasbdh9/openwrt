@@ -1839,24 +1839,37 @@ $(eval $(call KernelPackage,mlx4-core))
 define KernelPackage/mlx5-core
   SUBMENU:=$(NETWORK_DEVICES_MENU)
   TITLE:=Mellanox ConnectX(R) mlx5 core Network Driver
-  DEPENDS:=@PCI_SUPPORT +kmod-ptp +kmod-mlxfw +kmod-hwmon-core
+  DEPENDS:=@PCI_SUPPORT \
+	+kmod-ptp +kmod-mlxfw +kmod-hwmon-core +kmod-tls +kmod-macsec \
+	+kmod-lib-crc32c +kmod-nf-flow +kmod-sched-act-sample \
+	+ip-full +tc-full
   FILES:=$(LINUX_DIR)/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.ko
   KCONFIG:= CONFIG_MLX5_CORE \
+	CONFIG_MLX5_BRIDGE=y \
+	CONFIG_MLX5_CLS_ACT=n \
 	CONFIG_MLX5_CORE_EN=y \
 	CONFIG_MLX5_CORE_EN_DCB=y \
-	CONFIG_MLX5_CORE_IPOIB=n \
-	CONFIG_MLX5_EN_ARFS=n \
-	CONFIG_MLX5_EN_IPSEC=n \
+	CONFIG_MLX5_CORE_IPOIB=y \
+	CONFIG_MLX5_DPLL=n \
+	CONFIG_MLX5_EN_ARFS=y \
+	CONFIG_MLX5_EN_IPSEC=y \
+	CONFIG_MLX5_EN_PSP=n \
 	CONFIG_MLX5_EN_RXNFC=y \
-	CONFIG_MLX5_EN_TLS=n \
-	CONFIG_MLX5_ESWITCH=n \
+	CONFIG_MLX5_EN_TLS=y \
+	CONFIG_MLX5_ESWITCH=y \
 	CONFIG_MLX5_FPGA=n \
-	CONFIG_MLX5_FPGA_IPSEC=n \
-	CONFIG_MLX5_FPGA_TLS=n \
+	CONFIG_MLX5_MACSEC=y \
 	CONFIG_MLX5_MPFS=y \
-	CONFIG_MLX5_SW_STEERING=n \
-	CONFIG_MLX5_TC_CT=n \
-	CONFIG_MLX5_TLS=n \
+	CONFIG_MLX5_HW_STEERING=n \
+	CONFIG_MLX5_INFINIBAND=y \
+	CONFIG_MLX5_SF=y \
+	CONFIG_MLX5_SF_MANAGER=y \
+	CONFIG_MLX5_SW_STEERING=y \
+	CONFIG_MLX5_TC_CT=y \
+	CONFIG_MLX5_TC_SAMPLE=y \
+	CONFIG_MLX5_VDPA=n \
+	CONFIG_MLX5_VDPA_NET=n \
+	CONFIG_MLX5_VDPA_STEERING_DEBUG=n \
 	CONFIG_MLX5_VFIO_PCI=n
   AUTOLOAD:=$(call AutoLoad,45,mlx5_core,1)
 endef
