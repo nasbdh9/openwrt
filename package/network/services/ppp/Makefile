@@ -41,6 +41,7 @@ endef
 define Package/ppp
 $(call Package/ppp/Default)
   DEPENDS:=+kmod-ppp
+  DEPENDS+= +libpam
   TITLE:=PPP daemon
   VARIANT:=default
 endef
