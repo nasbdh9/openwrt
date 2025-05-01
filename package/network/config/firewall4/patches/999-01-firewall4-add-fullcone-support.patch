@@ -1,4 +1,4 @@
-From aa3b56e289fba7425e649a608c333622ffd9c367 Mon Sep 17 00:00:00 2001
+From 9459218da0b0eb553301deefb5dfa2f3a3ff8e12 Mon Sep 17 00:00:00 2001
 From: Syrone Wong <wong.syrone@gmail.com>
 Date: Sat, 9 Apr 2022 13:24:19 +0800
 Subject: [PATCH] firewall4: add fullcone support
@@ -12,32 +12,83 @@ defaults.fullcone is the global switch, while zone.fullcone4 and
 zone.fullcone6 are switches for IPv4 and IPv6 respectively, most
 IPv6 traffic do NOT need this FullCone NAT functionality.
 ---
- root/etc/config/firewall                      |  2 +
- root/usr/share/firewall4/templates/ruleset.uc | 11 ++++-
- .../firewall4/templates/zone-fullcone.uc      |  4 ++
- root/usr/share/ucode/fw4.uc                   | 44 ++++++++++++++++++-
- 4 files changed, 58 insertions(+), 3 deletions(-)
+ root/etc/config/firewall                      |  3 +
+ root/usr/share/firewall4/templates/ruleset.uc | 16 +++-
+ .../firewall4/templates/zone-fullcone.uc      |  4 +
+ root/usr/share/ucode/fw4.uc                   | 76 ++++++++++++++++++-
+ 4 files changed, 96 insertions(+), 3 deletions(-)
  create mode 100644 root/usr/share/firewall4/templates/zone-fullcone.uc
 
+diff --git a/root/etc/config/firewall b/root/etc/config/firewall
+index 48b2440..3df53dc 100644
 --- a/root/etc/config/firewall
 +++ b/root/etc/config/firewall
 @@ -5,6 +5,7 @@ config defaults
  	option forward		REJECT
  # Uncomment this line to disable ipv6 rules
  #	option disable_ipv6	1
-+	option fullcone '1'
++	option fullcone		'1'
  
  config zone
  	option name		lan
 @@ -20,6 +21,8 @@ config zone
  	option input		REJECT
  	option output		ACCEPT
- 	option forward		REJECT
-+	option fullcone4 '1'
-+	option fullcone6 '1'
+ 	option forward		DROP
++	option fullcone4	'1'
++	option fullcone6	'1'
  	option masq		1
  	option mtu_fix		1
  
+diff --git a/root/usr/share/firewall4/templates/ruleset.uc b/root/usr/share/firewall4/templates/ruleset.uc
+index 2bec4d9..60962f7 100644
+--- a/root/usr/share/firewall4/templates/ruleset.uc
++++ b/root/usr/share/firewall4/templates/ruleset.uc
+@@ -327,6 +327,12 @@ table inet fw4 {
+ {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
+ 		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
+ {%   endfor %}
++{%   if (zone.fullcone4): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
++{%   endif %}
++{%   if (zone.fullcone6): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
++{%   endif %}
+ {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
+ 	}
+ 
+@@ -337,20 +343,26 @@ table inet fw4 {
+ {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
+ 		{%+ include("redirect.uc", { fw4, zone, redirect }) %}
+ {%   endfor %}
+-{%   if (zone.masq): %}
++{%   if (zone.masq && !zone.fullcone4): %}
+ {%    for (let saddrs in zone.masq4_src_subnets): %}
+ {%     for (let daddrs in zone.masq4_dest_subnets): %}
+ 		{%+ include("zone-masq.uc", { fw4, zone, family: 4, saddrs, daddrs }) %}
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
+-{%   if (zone.masq6): %}
++{%   if (zone.masq6 && !zone.fullcone6): %}
+ {%    for (let saddrs in zone.masq6_src_subnets): %}
+ {%     for (let daddrs in zone.masq6_dest_subnets): %}
+ 		{%+ include("zone-masq.uc", { fw4, zone, family: 6, saddrs, daddrs }) %}
+ {%     endfor %}
+ {%    endfor %}
+ {%   endif %}
++{%   if (zone.fullcone4): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
++{%   endif %}
++{%   if (zone.fullcone6): %}
++		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
++{%   endif %}
+ {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
+ 	}
+ 
+diff --git a/root/usr/share/firewall4/templates/zone-fullcone.uc b/root/usr/share/firewall4/templates/zone-fullcone.uc
+new file mode 100644
+index 0000000..77d9806
 --- /dev/null
 +++ b/root/usr/share/firewall4/templates/zone-fullcone.uc
 @@ -0,0 +1,4 @@
@@ -45,6 +96,8 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
 +		meta nfproto {{ fw4.nfproto(family) }} fullcone comment "!fw4: Handle {{
 +		zone.name
 +}} {{ fw4.nfproto(family, true) }} fullcone NAT {{ direction }} traffic"
+diff --git a/root/usr/share/ucode/fw4.uc b/root/usr/share/ucode/fw4.uc
+index 690deb0..c2dcca9 100644
 --- a/root/usr/share/ucode/fw4.uc
 +++ b/root/usr/share/ucode/fw4.uc
 @@ -1,3 +1,5 @@
@@ -79,7 +132,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  
  return {
  	read_kernel_version: function() {
-@@ -832,6 +853,18 @@ return {
+@@ -855,6 +876,18 @@ return {
  			warn(`[!] ${msg}\n`);
  	},
  
@@ -98,7 +151,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  	get: function(sid, opt) {
  		return this.cursor.get("firewall", sid, opt);
  	},
-@@ -1013,6 +1046,21 @@ return {
+@@ -1036,6 +1069,21 @@ return {
  		}
  	},
  
@@ -120,7 +173,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  	parse_policy: function(val) {
  		return this.parse_enum(val, [
  			"accept",
-@@ -1452,6 +1500,7 @@ return {
+@@ -1475,6 +1523,7 @@ return {
  			"dnat",
  			"snat",
  			"masquerade",
@@ -128,7 +181,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  			"accept",
  			"reject",
  			"drop"
-@@ -1919,6 +1968,7 @@ return {
+@@ -1946,6 +1995,7 @@ return {
  		}
  
  		let defs = this.parse_options(data, {
@@ -136,7 +189,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  			input: [ "policy", "drop" ],
  			output: [ "policy", "drop" ],
  			forward: [ "policy", "drop" ],
-@@ -1953,6 +2003,11 @@ return {
+@@ -1980,6 +2030,11 @@ return {
  
  		delete defs.syn_flood;
  
@@ -148,7 +201,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  		this.state.defaults = defs;
  	},
  
-@@ -1977,6 +2032,8 @@ return {
+@@ -2004,6 +2059,8 @@ return {
  			masq_dest: [ "network", null, PARSE_LIST ],
  
  			masq6: [ "bool" ],
@@ -157,7 +210,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  
  			extra: [ "string", null, UNSUPPORTED ],
  			extra_src: [ "string", null, UNSUPPORTED ],
-@@ -2009,6 +2066,18 @@ return {
+@@ -2036,6 +2093,18 @@ return {
  			}
  		}
  
@@ -176,7 +229,7 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  		if (zone.mtu_fix && this.kernel < 0x040a0000) {
  			this.warn_section(data, "option 'mtu_fix' requires kernel 4.10 or later");
  			return;
-@@ -2178,10 +2247,15 @@ return {
+@@ -2205,10 +2274,15 @@ return {
  		zone.related_subnets = related_subnets;
  		zone.related_physdevs = related_physdevs;
  
@@ -193,47 +246,6 @@ IPv6 traffic do NOT need this FullCone NAT functionality.
  			zone.dflags.helper = true;
  
  			for (let helper in (length(zone.helper) ? zone.helper : this.state.helpers)) {
---- a/root/usr/share/firewall4/templates/ruleset.uc
-+++ b/root/usr/share/firewall4/templates/ruleset.uc
-@@ -320,6 +320,12 @@ table inet fw4 {
- {%   for (let redirect in fw4.redirects(`dstnat_${zone.name}`)): %}
- 		{%+ include("redirect.uc", { fw4, redirect }) %}
- {%   endfor %}
-+{%   if (zone.fullcone4): %}
-+		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "dstnat" }) %}
-+{%   endif %}
-+{%   if (zone.fullcone6): %}
-+		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "dstnat" }) %}
-+{%   endif %}
- {%   fw4.includes('chain-append', `dstnat_${zone.name}`) %}
- 	}
- 
-@@ -330,20 +336,26 @@ table inet fw4 {
- {%   for (let redirect in fw4.redirects(`srcnat_${zone.name}`)): %}
- 		{%+ include("redirect.uc", { fw4, redirect }) %}
- {%   endfor %}
--{%   if (zone.masq): %}
-+{%   if (zone.masq && !zone.fullcone4): %}
- {%    for (let saddrs in zone.masq4_src_subnets): %}
- {%     for (let daddrs in zone.masq4_dest_subnets): %}
- 		{%+ include("zone-masq.uc", { fw4, zone, family: 4, saddrs, daddrs }) %}
- {%     endfor %}
- {%    endfor %}
- {%   endif %}
--{%   if (zone.masq6): %}
-+{%   if (zone.masq6 && !zone.fullcone6): %}
- {%    for (let saddrs in zone.masq6_src_subnets): %}
- {%     for (let daddrs in zone.masq6_dest_subnets): %}
- 		{%+ include("zone-masq.uc", { fw4, zone, family: 6, saddrs, daddrs }) %}
- {%     endfor %}
- {%    endfor %}
- {%   endif %}
-+{%   if (zone.fullcone4): %}
-+		{%+ include("zone-fullcone.uc", { fw4, zone, family: 4, direction: "srcnat" }) %}
-+{%   endif %}
-+{%   if (zone.fullcone6): %}
-+		{%+ include("zone-fullcone.uc", { fw4, zone, family: 6, direction: "srcnat" }) %}
-+{%   endif %}
- {%   fw4.includes('chain-append', `srcnat_${zone.name}`) %}
- 	}
- 
+-- 
+2.43.0
+
