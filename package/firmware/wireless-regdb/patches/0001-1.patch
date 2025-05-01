@@ -1,0 +1,111 @@
+From ebc4c0b13eeb7f0546d446b87d87d104003a0fe9 Mon Sep 17 00:00:00 2001
+From: Tan Zien <nabsdh9@gmail.com>
+Date: Fri, 2 May 2025 00:54:22 +0800
+Subject: [PATCH] 1
+
+---
+ db.txt | 73 +++++++++++++++-------------------------------------------
+ 1 file changed, 19 insertions(+), 54 deletions(-)
+
+diff --git a/db.txt b/db.txt
+index 16bcb32..8d7af0a 100644
+--- a/db.txt
++++ b/db.txt
+@@ -10,24 +10,12 @@ wmmrule ETSI:
+ 
+ # This is the world regulatory domain
+ country 00:
+-	# There is no global intersection for 802.11ah, so just mark the entire
+-	# possible band as NO-IR
+-	(755 - 928 @ 2), (20), NO-IR
+-	(2402 - 2472 @ 40), (20)
+-	# Channel 12 - 13.
+-	(2457 - 2482 @ 20), (20), NO-IR, AUTO-BW
+-	# Channel 14. Only JP enables this and for 802.11b only
+-	(2474 - 2494 @ 20), (20), NO-IR, NO-OFDM
+-	# Channel 36 - 48
+-	(5170 - 5250 @ 80), (20), NO-IR, AUTO-BW
+-	# Channel 52 - 64
+-	(5250 - 5330 @ 80), (20), NO-IR, DFS, AUTO-BW
+-	# Channel 100 - 144
+-	(5490 - 5730 @ 160), (20), NO-IR, DFS
+-	# Channel 149 - 165
+-	(5735 - 5835 @ 80), (20), NO-IR
+-	# IEEE 802.11ad (60GHz), channels 1..3
+-	(57240 - 63720 @ 2160), (0)
++	# 2.4G band
++	(2400 - 2472 @ 40), (30)
++	# 5G band
++	(5150 - 5895 @ 160), (30), AUTO-BW
++	# 6G band
++	(5925 - 7125 @ 320), (30), AUTO-BW
+ 
+ # AD as part of CEPT accepted decisions 2005/513/EC (5GHz RLAN, EN 301 893)
+ # and 2006/771/EC (amended by 2008/432/EC, Short-Range Devices, EN 300 440)
+@@ -454,16 +442,13 @@ country CL: DFS-JP
+ # https://wap.miit.gov.cn/cms_files/filemanager/1226211233/attach/20219/d125301b13454551b698ff5afa49ca28.pdf
+ # https://www.miit.gov.cn/cms_files/filemanager/1226211233/attach/20236/d1dc19424d5a4cfe90d631adeee8dd58.pdf
+ # Note: The transmit power for 5250-5350MHz bands can be raised by 3dBm when TPC is implemented
+-country CN: DFS-FCC
+-	(2400 - 2483.5 @ 40), (20)
+-	(5150 - 5250 @ 80), (23), NO-OUTDOOR, AUTO-BW
+-	(5250 - 5350 @ 80), (20), NO-OUTDOOR, DFS, AUTO-BW
+-	(5725 - 5850 @ 80), (33)
+-	# 60 GHz band channels 1,4: 28dBm, channels 2,3: 44dBm
+-	# ref: http://www.miit.gov.cn/n11293472/n11505629/n11506593/n11960250/n11960606/n11960700/n12330791.files/n12330790.pdf
+-	(57240 - 59400 @ 2160), (28)
+-	(59400 - 63720 @ 2160), (44)
+-	(63720 - 65880 @ 2160), (28)
++country CN:
++	# 2.4G band
++	(2400 - 2472 @ 40), (30)
++	# 5G band
++	(5150 - 5895 @ 160), (30), AUTO-BW
++	# 6G band
++	(5925 - 7125 @ 320), (30), AUTO-BW
+ 
+ # Source:
+ # https://www.ane.gov.co/Sliders/archivos/gesti%C3%B3n%20t%C3%A9cnica/Estudios%20de%20gesti%C3%B3n%20y%20planeaci%C3%B3n/Banda%206%20GHz/Documentos%20decisi%C3%B3n/Resolucion%20000737%20del%2018112022.pdf
+@@ -2020,33 +2005,13 @@ country UG: DFS-FCC
+ # power in order to avoid any potential interference in the adjacent restricted
+ # frequency band, 2,483.5–2,500 MHz which is subject to strict emission limits
+ # set out in 47 CFR § 15.205. TODO: reenable and specify a safe TX power here.
+-country US: DFS-FCC
+-	# S1G Channel 1-3
+-	(902 - 904 @ 2), (30)
+-	# S1G Channel 5-35
+-	(904 - 920 @ 16), (30)
+-	# S1G Channel 37-51
+-	(920 - 928 @ 8), (30)
++country US:
++	# 2.4G band
+ 	(2400 - 2472 @ 40), (30)
+-	# 5.15 ~ 5.25 GHz: 30 dBm for master mode, 23 dBm for clients
+-	(5150 - 5250 @ 80), (23), AUTO-BW
+-	(5250 - 5350 @ 80), (24), DFS, AUTO-BW
+-	# This range ends at 5725 MHz, but channel 144 extends to 5730 MHz.
+-	# Since 5725 ~ 5730 MHz belongs to the next range which has looser
+-	# requirements, we can extend the range by 5 MHz to make the kernel
+-	# happy and be able to use channel 144.
+-	(5470 - 5730 @ 160), (24), DFS
+-	(5730 - 5850 @ 80), (30), AUTO-BW
+-	# https://www.federalregister.gov/documents/2021/05/03/2021-08802/use-of-the-5850-5925-ghz-band
+-	# max. 33 dBm AP @ 20MHz, 36 dBm AP @ 40Mhz+, 6 dB less for clients
+-	(5850 - 5895 @ 40), (27), NO-OUTDOOR, AUTO-BW, NO-IR
+-	# 6g band
+-	# https://www.federalregister.gov/documents/2020/05/26/2020-11236/unlicensed-use-of-the-6ghz-band
+-	(5925 - 7125 @ 320), (12), NO-OUTDOOR, NO-IR
+-	# 60g band
+-	# reference: section IV-D https://docs.fcc.gov/public/attachments/FCC-16-89A1.pdf
+-	# channels 1-6 EIRP=40dBm(43dBm peak)
+-	(57240 - 71000 @ 2160), (40)
++	# 5G band
++	(5150 - 5895 @ 160), (30), AUTO-BW
++	# 6G band
++	(5925 - 7125 @ 320), (30), AUTO-BW
+ 
+ country UY: DFS-FCC
+ 	(2402 - 2482 @ 40), (20)
+-- 
+2.43.0
+
