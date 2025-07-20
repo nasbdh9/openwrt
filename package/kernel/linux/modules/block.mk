@@ -422,6 +422,7 @@ define KernelPackage/md-multipath
 $(call KernelPackage/md/Depends,)
   TITLE:=MD Multipath Module
   KCONFIG:=CONFIG_MD_MULTIPATH
+  DEPENDS:=@LINUX_6_6
   FILES:=$(LINUX_DIR)/drivers/md/multipath.ko
   AUTOLOAD:=$(call AutoLoad,29,multipath)
 endef
