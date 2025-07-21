@@ -61,11 +61,6 @@ ifeq ($(BUILD_VARIANT),json)
   CONFIGURE_ARGS += --with-json
 endif
 
-define Build/Patch
-	rm -v $(PKG_BUILD_DIR)/tests/shell/*.{orig,rej}
-	$(call Build/Patch/Default,)
-endef
-
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/*.so* $(1)/usr/lib/
