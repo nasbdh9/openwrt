@@ -80,7 +80,6 @@ TARGET_DEVICES += enterasys_ws-ap3710i
 define Device/extreme-networks_ws-ap3825i
   DEVICE_VENDOR := Extreme Networks
   DEVICE_MODEL := WS-AP3825i
-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
   BLOCKSIZE := 128k
   KERNEL_NAME := simpleImage.ws-ap3825i
   KERNEL_ENTRY := 0x3000000
